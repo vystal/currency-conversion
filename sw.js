@@ -6,8 +6,8 @@ const STATIC_ASSETS = [
   '/index.html',
   '/script.js',
   '/site.webmanifest',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/icons/web-app-manifest-192x192.png',
+  '/icons/web-app-manifest-512x512.png'
 ];
 
 // Install: pre-cache app shell
