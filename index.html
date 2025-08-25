@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="__variable_3c557b">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,120 +7,107 @@
     <link rel="stylesheet" href="styles.tailwind.css">
     <link rel="stylesheet" href="styles.main.css">
 </head>
-<body class="bg-background-light dark:bg-background-dark min-h-screen font-sans">
+<body class="bg-background-light dark:bg-background-dark min-h-screen font-[Styrene]">
     <div class="container mx-auto max-w-4xl p-6">
         <!-- Header -->
-        <header class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <header class="text-center mb-4">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mt-12">
                 Currency Converter
             </h1>
-            <p class="text-gray-600 dark:text-gray-400">
-                Convert between USD and NZD with real-time exchange rates
-            </p>
         </header>
 
         <!-- Main Converter Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 mb-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-end">
-                <!-- From Currency -->
-                <div class="space-y-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        From
-                    </label>
-                    <div class="space-y-3">
-                        <select id="fromCurrency" class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-primary dark:focus:border-primary-light">
-                            <option value="USD">USD - US Dollar</option>
-                            <option value="NZD">NZD - New Zealand Dollar</option>
-                        </select>
-                        <input 
-                            type="number" 
-                            id="fromAmount" 
-                            placeholder="Enter amount" 
-                            class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary dark:focus:border-primary-light"
-                            step="0.01"
-                            min="0"
-                        >
+        <div class="card block font-normal group relative my-2 ring-2 ring-transparent rounded-2xl dark:bg-background-dark border border-gray-950/10 dark:border-white/10 overflow-hidden w-full">
+            <div class="p-6">
+                <!-- Currency Labels -->
+                <div class="flex items-center justify-between mb-6">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-gray-900 dark:text-white" id="fromCurrencyLabel">USD</div>
                     </div>
-                </div>
-
-                <!-- Swap Button -->
-                <div class="flex justify-center lg:justify-center">
-                    <button 
-                        id="swapButton"
-                        class="btn secondary p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        title="Swap currencies"
-                    >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m0-4l-4-4"/>
+                    <button id="swapButton" class="px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-500 hover:dark:border-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right-left">
+                            <path d="m16 3 4 4-4 4"></path>
+                            <path d="M20 7H4"></path>
+                            <path d="m8 21-4-4 4-4"></path>
+                            <path d="M4 17h16"></path>
                         </svg>
                     </button>
-                </div>
-
-                <!-- To Currency -->
-                <div class="space-y-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        To
-                    </label>
-                    <div class="space-y-3">
-                        <select id="toCurrency" class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-primary dark:focus:border-primary-light">
-                            <option value="NZD">NZD - New Zealand Dollar</option>
-                            <option value="USD">USD - US Dollar</option>
-                        </select>
-                        <input 
-                            type="text" 
-                            id="toAmount" 
-                            placeholder="Converted amount" 
-                            class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                            readonly
-                        >
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-gray-900 dark:text-white" id="toCurrencyLabel">NZD</div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Convert Button -->
-            <div class="mt-8 text-center">
-                <button id="convertButton" class="btn primary px-8 py-3 text-lg">
-                    Convert Currency
-                </button>
-            </div>
-
-            <!-- Exchange Rate Info -->
-            <div id="exchangeRateInfo" class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hidden">
-                <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-600 dark:text-gray-400">Exchange Rate:</span>
-                    <span id="exchangeRate" class="font-medium text-gray-900 dark:text-white"></span>
-                </div>
-                <div class="flex items-center justify-between text-sm mt-2">
-                    <span class="text-gray-600 dark:text-gray-400">Last Updated:</span>
-                    <span id="lastUpdated" class="text-gray-900 dark:text-white"></span>
+                <!-- Amount Inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="space-y-2">
+                        <label class="block text-md font-medium text-gray-700 dark:text-gray-300">
+                            Amount
+                        </label>
+                        <div class="relative">
+                            <div class="flex items-center min-w-[42px]">
+                                <span id="fromCurrencySymbol" class="absolute left-3 z-10 text-gray-500 dark:text-gray-400 font-medium ml-2">$</span>
+                                <input 
+                                    type="number" 
+                                    id="fromAmount" 
+                                    placeholder="0"
+                                    autofocus 
+                                    class="lg:flex relative flex-1 pointer-events-auto rounded-xl w-full items-center text-sm leading-6 py-1.5 pl-8 pr-3 pl-5 shadow-sm text-gray-900 dark:text-white bg-background-light dark:bg-background-dark dark:brightness-[1.1] dark:ring-1 dark:hover:brightness-[1.25] ring-1 ring-gray-400/20 hover:ring-gray-600/25 dark:ring-gray-600/30 dark:hover:ring-gray-500/30 focus:outline-primary justify-between truncate gap-2 min-w-[43px]"
+                                    step="0.01" 
+                                    min="0"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-md font-medium text-gray-700 dark:text-gray-300">
+                            Converted Amount
+                        </label>
+                        <div class="relative">
+                            <div class="flex items-center min-w-[42px]">
+                                <span id="toCurrencySymbol" class="absolute left-3 z-10 text-gray-500 dark:text-gray-400 font-medium ml-2">$</span>
+                                <input 
+                                    type="text" 
+                                    id="toAmount" 
+                                    placeholder="0" 
+                                    class="lg:flex relative flex-1 pointer-events-auto rounded-xl w-full items-center text-sm leading-6 py-1.5 pl-8 pr-3 pl-5 shadow-sm text-gray-900 dark:text-white bg-background-light dark:bg-background-dark dark:brightness-[1.1] dark:ring-1 dark:hover:brightness-[1.25] ring-1 ring-gray-400/20 hover:ring-gray-600/25 dark:ring-gray-600/30 dark:hover:ring-gray-500/30 focus:outline-primary justify-between truncate gap-2 min-w-[43px]"
+                                    readonly
+                                >
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Current Exchange Rate Display -->
-        <div id="currentRateDisplay" class="fixed top-4 left-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 hidden">
-            <div class="text-xs text-gray-600 dark:text-gray-400 mb-1">Current Rate</div>
+        <div id="currentRateDisplay" class="fixed top-4 left-4 px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hidden">
+            <div class="text-sm text-gray-600 dark:text-gray-400">Current Rate:</div>
             <div id="currentRateText" class="text-sm font-medium text-gray-900 dark:text-white"></div>
         </div>
 
         <!-- Loading Spinner -->
-        <div id="loadingSpinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 text-center">
-                <div class="animate-spin w-8 h-8 border-4 border-primary-light border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p class="text-gray-900 dark:text-white">Fetching exchange rates...</p>
+        <div id="loadingSpinner" class="fixed inset-0 bg-black/40 flex items-center justify-center hidden z-50">
+            <div class="px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 bg-background-light dark:bg-background-dark">
+                <div class="animate-spin w-5 h-5 border-2 border-primary-light border-t-transparent rounded-full"></div>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">Fetching exchange rates...</p>
             </div>
         </div>
 
         <!-- Theme Toggle -->
         <div class="fixed top-4 right-4">
-            <button id="themeToggle" class="btn secondary p-2">
+            <button id="themeToggle" class="px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-500 hover:dark:border-gray-500">
                 <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                 </svg>
                 <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
             </button>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hidden z-50">
+            <p id="errorText"></p>
         </div>
     </div>
 

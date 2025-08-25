@@ -9,48 +9,33 @@ class CurrencyConverter {
         this.currentRates = null;
         this.lastUpdated = null;
         
+        // Current currency pair
+        this.fromCurrency = 'USD';
+        this.toCurrency = 'NZD';
+        
         this.init();
     }
 
     init() {
         this.bindEvents();
+        this.updateCurrencyDisplay();
         this.loadInitialRates();
     }
 
     bindEvents() {
-        // Convert button
-        document.getElementById('convertButton').addEventListener('click', () => {
-            this.convertCurrency();
-        });
-
         // Swap button
         document.getElementById('swapButton').addEventListener('click', () => {
             this.swapCurrencies();
         });
 
-        // Input change events
+        // Input change events - auto convert as user types
         document.getElementById('fromAmount').addEventListener('input', () => {
             if (this.currentRates) {
                 this.convertCurrency();
             }
         });
 
-        // Currency change events
-        document.getElementById('fromCurrency').addEventListener('change', () => {
-            this.updateCurrentRateDisplay();
-            if (this.currentRates && document.getElementById('fromAmount').value) {
-                this.convertCurrency();
-            }
-        });
-
-        document.getElementById('toCurrency').addEventListener('change', () => {
-            this.updateCurrentRateDisplay();
-            if (this.currentRates && document.getElementById('fromAmount').value) {
-                this.convertCurrency();
-            }
-        });
-
-        // Enter key on amount input
+        // Enter key on amount input (for accessibility)
         document.getElementById('fromAmount').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.convertCurrency();
@@ -61,7 +46,7 @@ class CurrencyConverter {
     async loadInitialRates() {
         this.showLoading(true);
         try {
-            await this.fetchExchangeRates('USD');
+            await this.fetchExchangeRates(this.fromCurrency);
         } catch (error) {
             console.warn('Failed to fetch live rates, using fallback:', error);
             this.currentRates = this.fallbackRates;
@@ -73,16 +58,17 @@ class CurrencyConverter {
 
     async fetchExchangeRates(baseCurrency) {
         try {
-            // Try to fetch from API (will likely fail due to CORS in demo)
-            const response = await fetch(`${this.baseUrl}${baseCurrency}`);
+            // Try to fetch from a working free API
+            const response = await fetch(`https://open.er-api.com/v6/latest/${baseCurrency}`);
             if (!response.ok) throw new Error('API request failed');
             
             const data = await response.json();
             this.currentRates = {
                 [baseCurrency]: data.rates
             };
-            this.lastUpdated = new Date(data.date);
+            this.lastUpdated = new Date();
         } catch (error) {
+            console.warn('API fetch failed, using fallback rates:', error);
             // Use fallback rates with some variation for demo
             const variation = 0.02; // 2% variation
             const baseRate = this.fallbackRates[baseCurrency === 'USD' ? 'USD' : 'NZD'];
@@ -99,36 +85,30 @@ class CurrencyConverter {
     }
 
     async convertCurrency() {
-        const fromCurrency = document.getElementById('fromCurrency').value;
-        const toCurrency = document.getElementById('toCurrency').value;
         const fromAmount = parseFloat(document.getElementById('fromAmount').value);
 
+        // Clear output if no valid input
         if (!fromAmount || isNaN(fromAmount) || fromAmount <= 0) {
-            this.showError('Please enter a valid amount');
+            document.getElementById('toAmount').value = '';
             return;
         }
 
-        this.showLoading(true);
-
         try {
             // Ensure we have rates for the base currency
-            if (!this.currentRates || !this.currentRates[fromCurrency]) {
-                await this.fetchExchangeRates(fromCurrency);
+            if (!this.currentRates || !this.currentRates[this.fromCurrency]) {
+                await this.fetchExchangeRates(this.fromCurrency);
             }
 
-            const rate = this.getExchangeRate(fromCurrency, toCurrency);
+            const rate = this.getExchangeRate(this.fromCurrency, this.toCurrency);
             const convertedAmount = fromAmount * rate;
 
             // Update UI
             document.getElementById('toAmount').value = convertedAmount.toFixed(2);
-            this.updateExchangeRateInfo(fromCurrency, toCurrency, rate);
             this.updateCurrentRateDisplay();
 
         } catch (error) {
             this.showError('Failed to convert currency. Please try again.');
             console.error('Conversion error:', error);
-        } finally {
-            this.showLoading(false);
         }
     }
 
@@ -144,15 +124,16 @@ class CurrencyConverter {
     }
 
     swapCurrencies() {
-        const fromCurrency = document.getElementById('fromCurrency');
-        const toCurrency = document.getElementById('toCurrency');
         const fromAmount = document.getElementById('fromAmount');
         const toAmount = document.getElementById('toAmount');
 
-        // Swap currency selections
-        const tempCurrency = fromCurrency.value;
-        fromCurrency.value = toCurrency.value;
-        toCurrency.value = tempCurrency;
+        // Swap the currency values
+        const tempCurrency = this.fromCurrency;
+        this.fromCurrency = this.toCurrency;
+        this.toCurrency = tempCurrency;
+
+        // Update the display
+        this.updateCurrencyDisplay();
 
         // Swap amounts if both exist
         if (toAmount.value && fromAmount.value) {
@@ -169,28 +150,44 @@ class CurrencyConverter {
         }
     }
 
+    updateCurrencyDisplay() {
+        // Update currency labels
+        document.getElementById('fromCurrencyLabel').textContent = this.fromCurrency;
+        document.getElementById('toCurrencyLabel').textContent = this.toCurrency;
+
+        // Update currency symbols in the inputs
+        const fromSymbol = this.getCurrencySymbol(this.fromCurrency);
+        const toSymbol = this.getCurrencySymbol(this.toCurrency);
+        
+        document.getElementById('fromCurrencySymbol').textContent = fromSymbol;
+        document.getElementById('toCurrencySymbol').textContent = toSymbol;
+    }
+
+    getCurrencySymbol(currency) {
+        const symbols = {
+            'USD': '$',
+            'NZD': '$'
+        };
+        return symbols[currency] || currency;
+    }
+
+    getCurrencyName(currency) {
+        const names = {
+            'USD': 'US Dollar',
+            'NZD': 'New Zealand Dollar'
+        };
+        return names[currency] || currency;
+    }
+
     updateCurrentRateDisplay() {
-        const fromCurrency = document.getElementById('fromCurrency').value;
-        const toCurrency = document.getElementById('toCurrency').value;
         const currentRateDisplay = document.getElementById('currentRateDisplay');
         const currentRateText = document.getElementById('currentRateText');
 
         if (this.currentRates) {
-            const rate = this.getExchangeRate(fromCurrency, toCurrency);
-            currentRateText.textContent = `1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}`;
+            const rate = this.getExchangeRate(this.fromCurrency, this.toCurrency);
+            currentRateText.textContent = `1 ${this.fromCurrency} = ${rate.toFixed(4)} ${this.toCurrency}`;
             currentRateDisplay.classList.remove('hidden');
         }
-    }
-
-    updateExchangeRateInfo(fromCurrency, toCurrency, rate) {
-        const rateInfo = document.getElementById('exchangeRateInfo');
-        const rateElement = document.getElementById('exchangeRate');
-        const lastUpdatedElement = document.getElementById('lastUpdated');
-
-        rateElement.textContent = `1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}`;
-        lastUpdatedElement.textContent = this.lastUpdated.toLocaleString();
-        
-        rateInfo.classList.remove('hidden');
     }
 
     showLoading(show) {
