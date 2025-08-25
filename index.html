@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" class="__variable_3c557b">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="icons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="icons/favicon.svg" />
+    <link rel="shortcut icon" href="icons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Converter" />
+    <link rel="manifest" href="site.webmanifest" />
+    <meta name="theme-color" content="#000000">
     <title>Currency Converter - USD ⇄ NZD</title>
     <link rel="stylesheet" href="styles.tailwind.css">
     <link rel="stylesheet" href="styles.main.css">
 </head>
+
 <body class="bg-background-light dark:bg-background-dark min-h-screen font-[Styrene]">
     <div class="container mx-auto max-w-4xl p-6">
         <!-- Header -->
@@ -17,15 +26,19 @@
         </header>
 
         <!-- Main Converter Card -->
-        <div class="card block font-normal group relative my-2 ring-2 ring-transparent rounded-2xl dark:bg-background-dark border border-gray-950/10 dark:border-white/10 overflow-hidden w-full">
+        <div
+            class="card block font-normal group relative my-2 ring-2 ring-transparent rounded-2xl dark:bg-background-dark border border-gray-950/10 dark:border-white/10 overflow-hidden w-full">
             <div class="p-6">
                 <!-- Currency Labels -->
                 <div class="flex items-center justify-between mb-6">
                     <div class="text-center">
                         <div class="text-2xl font-bold text-gray-900 dark:text-white" id="fromCurrencyLabel">USD</div>
                     </div>
-                    <button id="swapButton" class="px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-500 hover:dark:border-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right-left">
+                    <button id="swapButton"
+                        class="px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-500 hover:dark:border-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-arrow-right-left">
                             <path d="m16 3 4 4-4 4"></path>
                             <path d="M20 7H4"></path>
                             <path d="m8 21-4-4 4-4"></path>
@@ -45,16 +58,11 @@
                         </label>
                         <div class="relative">
                             <div class="flex items-center min-w-[42px]">
-                                <span id="fromCurrencySymbol" class="absolute left-3 z-10 text-gray-500 dark:text-gray-400 font-medium ml-2">$</span>
-                                <input 
-                                    type="number" 
-                                    id="fromAmount" 
-                                    placeholder="0"
-                                    autofocus 
+                                <span id="fromCurrencySymbol"
+                                    class="absolute left-3 z-10 text-gray-500 dark:text-gray-400 font-medium ml-2">$</span>
+                                <input type="number" id="fromAmount" placeholder="0" autofocus
                                     class="lg:flex relative flex-1 pointer-events-auto rounded-xl w-full items-center text-sm leading-6 py-1.5 pl-8 pr-3 pl-5 shadow-sm text-gray-900 dark:text-white bg-background-light dark:bg-background-dark dark:brightness-[1.1] dark:ring-1 dark:hover:brightness-[1.25] ring-1 ring-gray-400/20 hover:ring-gray-600/25 dark:ring-gray-600/30 dark:hover:ring-gray-500/30 focus:outline-primary justify-between truncate gap-2 min-w-[43px]"
-                                    step="0.01" 
-                                    min="0"
-                                >
+                                    step="0.01" min="0">
                             </div>
                         </div>
                     </div>
@@ -64,14 +72,11 @@
                         </label>
                         <div class="relative">
                             <div class="flex items-center min-w-[42px]">
-                                <span id="toCurrencySymbol" class="absolute left-3 z-10 text-gray-500 dark:text-gray-400 font-medium ml-2">$</span>
-                                <input 
-                                    type="text" 
-                                    id="toAmount" 
-                                    placeholder="0" 
+                                <span id="toCurrencySymbol"
+                                    class="absolute left-3 z-10 text-gray-500 dark:text-gray-400 font-medium ml-2">$</span>
+                                <input type="text" id="toAmount" placeholder="0"
                                     class="lg:flex relative flex-1 pointer-events-auto rounded-xl w-full items-center text-sm leading-6 py-1.5 pl-8 pr-3 pl-5 shadow-sm text-gray-900 dark:text-white bg-background-light dark:bg-background-dark dark:brightness-[1.1] dark:ring-1 dark:hover:brightness-[1.25] ring-1 ring-gray-400/20 hover:ring-gray-600/25 dark:ring-gray-600/30 dark:hover:ring-gray-500/30 focus:outline-primary justify-between truncate gap-2 min-w-[43px]"
-                                    readonly
-                                >
+                                    readonly>
                             </div>
                         </div>
                     </div>
@@ -80,14 +85,16 @@
         </div>
 
         <!-- Current Exchange Rate Display -->
-        <div id="currentRateDisplay" class="fixed top-4 left-4 px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hidden">
+        <div id="currentRateDisplay"
+            class="fixed top-4 left-4 px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hidden">
             <div class="text-sm text-gray-600 dark:text-gray-400">Current Rate:</div>
             <div id="currentRateText" class="text-sm font-medium text-gray-900 dark:text-white"></div>
         </div>
 
         <!-- Loading Spinner -->
         <div id="loadingSpinner" class="fixed inset-0 bg-black/40 flex items-center justify-center hidden z-50">
-            <div class="px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 bg-background-light dark:bg-background-dark">
+            <div
+                class="px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 bg-background-light dark:bg-background-dark">
                 <div class="animate-spin w-5 h-5 border-2 border-primary-light border-t-transparent rounded-full"></div>
                 <p class="text-sm font-medium text-gray-900 dark:text-white">Fetching exchange rates...</p>
             </div>
@@ -95,12 +102,17 @@
 
         <!-- Theme Toggle -->
         <div class="fixed top-4 right-4">
-            <button id="themeToggle" class="px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-500 hover:dark:border-gray-500">
+            <button id="themeToggle"
+                class="px-3.5 py-2 flex flex-row gap-3 items-center border-standard rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-500 hover:dark:border-gray-500">
                 <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                    </path>
                 </svg>
                 <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                    </path>
                 </svg>
             </button>
         </div>
@@ -112,5 +124,12 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(console.error);
+        }
+    </script>
+
 </body>
+
 </html>

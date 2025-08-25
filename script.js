@@ -1,3 +1,43 @@
+// script.js (top-level)
+let deferredPrompt;
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e; // keep for later
+});
+
+async function maybeShowInstallPrompt() {
+  if (!isMobile || !deferredPrompt) return;
+  if (window.matchMedia('(display-mode: standalone)').matches) return; // already installed
+
+  const { outcome } = await deferredPrompt.prompt(); // must be called in a gesture
+  deferredPrompt = null; // one-shot
+  // optional: console.log('Install outcome:', outcome);
+}
+
+function wireFirstGestureInstall() {
+  const once = { once: true, passive: true };
+  document.addEventListener('touchend', maybeShowInstallPrompt, once);
+  document.addEventListener('click',    maybeShowInstallPrompt, once);
+
+  const amt = document.getElementById('fromAmount');
+  if (amt) amt.addEventListener('input', maybeShowInstallPrompt, once);
+
+  const swap = document.getElementById('swapButton');
+  if (swap) {
+    swap.addEventListener('click',    maybeShowInstallPrompt, once);
+    swap.addEventListener('touchend', maybeShowInstallPrompt, once);
+  }
+}
+
+window.addEventListener('load', wireFirstGestureInstall);
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+});
+
+
 class CurrencyConverter {
     constructor() {
         this.apiKey = 'demo'; // Using demo mode for this example
