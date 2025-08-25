@@ -1,14 +1,21 @@
 // sw.js
-const VERSION = 'v1';
+const VERSION = 'v2'; // bump to flush old caches at wrong scope
 const STATIC_CACHE = `static-${VERSION}`;
+
+// Derive the controlled base path, e.g. "/currency-conversion/"
+const BASE_PATH = new URL(self.registration.scope).pathname.replace(/\/+$/, '/') || '/';
+
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/script.js',
-  '/site.webmanifest',
-  '/icons/web-app-manifest-192x192.png',
-  '/icons/web-app-manifest-512x512.png'
-];
+  '',                 // => BASE_PATH
+  'index.html',
+  'script.js',
+  'site.webmanifest',
+  // a few representative icons (add more if you want)
+  'icons/icon-any-192x192.png',
+  'icons/icon-any-512x512.png',
+  'icons/icon-maskable-192x192.png',
+  'icons/icon-maskable-512x512.png'
+].map(p => BASE_PATH + p);
 
 // Install: pre-cache app shell
 self.addEventListener('install', (event) => {
@@ -23,7 +30,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys
-        .filter((k) => ![STATIC_CACHE].includes(k))
+        .filter((k) => k !== STATIC_CACHE)
         .map((k) => caches.delete(k))
       )
     )
@@ -32,11 +39,10 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch strategy:
-// - Navigations (HTML): network-first with cache fallback
+// - Navigations (HTML): network-first with cache fallback to app shell
 // - Others (CSS/JS/images/manifest): cache-first with network fallback
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-
   if (req.mode === 'navigate') {
     event.respondWith(networkFirst(req));
   } else {
@@ -52,7 +58,8 @@ async function networkFirst(req) {
     return fresh;
   } catch (err) {
     const cached = await caches.match(req);
-    return cached || caches.match('/');
+    // Fallback to app shell at the scoped base path
+    return cached || caches.match(BASE_PATH);
   }
 }
 
