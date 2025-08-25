@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter - USD ⇄ NZD</title>
+    <link rel="stylesheet" href="styles.tailwind.css">
+    <link rel="stylesheet" href="styles.main.css">
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen font-sans">
+    <div class="container mx-auto max-w-4xl p-6">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Currency Converter
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400">
+                Convert between USD and NZD with real-time exchange rates
+            </p>
+        </header>
+
+        <!-- Main Converter Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-end">
+                <!-- From Currency -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        From
+                    </label>
+                    <div class="space-y-3">
+                        <select id="fromCurrency" class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-primary dark:focus:border-primary-light">
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="NZD">NZD - New Zealand Dollar</option>
+                        </select>
+                        <input 
+                            type="number" 
+                            id="fromAmount" 
+                            placeholder="Enter amount" 
+                            class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary dark:focus:border-primary-light"
+                            step="0.01"
+                            min="0"
+                        >
+                    </div>
+                </div>
+
+                <!-- Swap Button -->
+                <div class="flex justify-center lg:justify-center">
+                    <button 
+                        id="swapButton"
+                        class="btn secondary p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        title="Swap currencies"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m0-4l-4-4"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- To Currency -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        To
+                    </label>
+                    <div class="space-y-3">
+                        <select id="toCurrency" class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-primary dark:focus:border-primary-light">
+                            <option value="NZD">NZD - New Zealand Dollar</option>
+                            <option value="USD">USD - US Dollar</option>
+                        </select>
+                        <input 
+                            type="text" 
+                            id="toAmount" 
+                            placeholder="Converted amount" 
+                            class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                            readonly
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Convert Button -->
+            <div class="mt-8 text-center">
+                <button id="convertButton" class="btn primary px-8 py-3 text-lg">
+                    Convert Currency
+                </button>
+            </div>
+
+            <!-- Exchange Rate Info -->
+            <div id="exchangeRateInfo" class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hidden">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">Exchange Rate:</span>
+                    <span id="exchangeRate" class="font-medium text-gray-900 dark:text-white"></span>
+                </div>
+                <div class="flex items-center justify-between text-sm mt-2">
+                    <span class="text-gray-600 dark:text-gray-400">Last Updated:</span>
+                    <span id="lastUpdated" class="text-gray-900 dark:text-white"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Convert Buttons -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Convert</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <button class="quick-convert btn secondary" data-amount="10">$10</button>
+                <button class="quick-convert btn secondary" data-amount="50">$50</button>
+                <button class="quick-convert btn secondary" data-amount="100">$100</button>
+                <button class="quick-convert btn secondary" data-amount="500">$500</button>
+            </div>
+        </div>
+
+        <!-- Historical Rates (Mock Data) -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Exchange Rates (USD to NZD)</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="border-b border-gray-200 dark:border-gray-700">
+                        <tr>
+                            <th class="text-left py-2 text-gray-700 dark:text-gray-300">Date</th>
+                            <th class="text-right py-2 text-gray-700 dark:text-gray-300">Rate</th>
+                            <th class="text-right py-2 text-gray-700 dark:text-gray-300">Change</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historicalRates" class="divide-y divide-gray-100 dark:divide-gray-700">
+                        <!-- Historical rates will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 text-center">
+                <div class="animate-spin w-8 h-8 border-4 border-primary-light border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p class="text-gray-900 dark:text-white">Fetching exchange rates...</p>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hidden">
+            <p id="errorText"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
