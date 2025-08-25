@@ -97,34 +97,10 @@
             </div>
         </div>
 
-        <!-- Quick Convert Buttons -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Convert</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <button class="quick-convert btn secondary" data-amount="10">$10</button>
-                <button class="quick-convert btn secondary" data-amount="50">$50</button>
-                <button class="quick-convert btn secondary" data-amount="100">$100</button>
-                <button class="quick-convert btn secondary" data-amount="500">$500</button>
-            </div>
-        </div>
-
-        <!-- Historical Rates (Mock Data) -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Exchange Rates (USD to NZD)</h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead class="border-b border-gray-200 dark:border-gray-700">
-                        <tr>
-                            <th class="text-left py-2 text-gray-700 dark:text-gray-300">Date</th>
-                            <th class="text-right py-2 text-gray-700 dark:text-gray-300">Rate</th>
-                            <th class="text-right py-2 text-gray-700 dark:text-gray-300">Change</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historicalRates" class="divide-y divide-gray-100 dark:divide-gray-700">
-                        <!-- Historical rates will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+        <!-- Current Exchange Rate Display -->
+        <div id="currentRateDisplay" class="fixed top-4 left-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 hidden">
+            <div class="text-xs text-gray-600 dark:text-gray-400 mb-1">Current Rate</div>
+            <div id="currentRateText" class="text-sm font-medium text-gray-900 dark:text-white"></div>
         </div>
 
         <!-- Loading Spinner -->
@@ -135,9 +111,16 @@
             </div>
         </div>
 
-        <!-- Error Message -->
-        <div id="errorMessage" class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hidden">
-            <p id="errorText"></p>
+        <!-- Theme Toggle -->
+        <div class="fixed top-4 right-4">
+            <button id="themeToggle" class="btn secondary p-2">
+                <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+                <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+            </button>
         </div>
     </div>
 

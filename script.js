@@ -14,7 +14,6 @@ class CurrencyConverter {
 
     init() {
         this.bindEvents();
-        this.populateHistoricalRates();
         this.loadInitialRates();
     }
 
@@ -38,25 +37,17 @@ class CurrencyConverter {
 
         // Currency change events
         document.getElementById('fromCurrency').addEventListener('change', () => {
-            this.updateQuickConvertButtons();
+            this.updateCurrentRateDisplay();
             if (this.currentRates && document.getElementById('fromAmount').value) {
                 this.convertCurrency();
             }
         });
 
         document.getElementById('toCurrency').addEventListener('change', () => {
+            this.updateCurrentRateDisplay();
             if (this.currentRates && document.getElementById('fromAmount').value) {
                 this.convertCurrency();
             }
-        });
-
-        // Quick convert buttons
-        document.querySelectorAll('.quick-convert').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const amount = e.target.getAttribute('data-amount');
-                document.getElementById('fromAmount').value = amount;
-                this.convertCurrency();
-            });
         });
 
         // Enter key on amount input
@@ -77,7 +68,7 @@ class CurrencyConverter {
             this.lastUpdated = new Date();
         }
         this.showLoading(false);
-        this.updateQuickConvertButtons();
+        this.updateCurrentRateDisplay();
     }
 
     async fetchExchangeRates(baseCurrency) {
@@ -131,6 +122,7 @@ class CurrencyConverter {
             // Update UI
             document.getElementById('toAmount').value = convertedAmount.toFixed(2);
             this.updateExchangeRateInfo(fromCurrency, toCurrency, rate);
+            this.updateCurrentRateDisplay();
 
         } catch (error) {
             this.showError('Failed to convert currency. Please try again.');
@@ -169,11 +161,24 @@ class CurrencyConverter {
             toAmount.value = tempAmount;
         }
 
-        this.updateQuickConvertButtons();
+        this.updateCurrentRateDisplay();
         
         // Convert if amount exists
         if (fromAmount.value) {
             this.convertCurrency();
+        }
+    }
+
+    updateCurrentRateDisplay() {
+        const fromCurrency = document.getElementById('fromCurrency').value;
+        const toCurrency = document.getElementById('toCurrency').value;
+        const currentRateDisplay = document.getElementById('currentRateDisplay');
+        const currentRateText = document.getElementById('currentRateText');
+
+        if (this.currentRates) {
+            const rate = this.getExchangeRate(fromCurrency, toCurrency);
+            currentRateText.textContent = `1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}`;
+            currentRateDisplay.classList.remove('hidden');
         }
     }
 
@@ -186,56 +191,6 @@ class CurrencyConverter {
         lastUpdatedElement.textContent = this.lastUpdated.toLocaleString();
         
         rateInfo.classList.remove('hidden');
-    }
-
-    updateQuickConvertButtons() {
-        const fromCurrency = document.getElementById('fromCurrency').value;
-        const buttons = document.querySelectorAll('.quick-convert');
-        
-        buttons.forEach(button => {
-            const amount = button.getAttribute('data-amount');
-            const symbol = fromCurrency === 'USD' ? '$' : 'NZ$';
-            button.textContent = `${symbol}${amount}`;
-        });
-    }
-
-    populateHistoricalRates() {
-        const tbody = document.getElementById('historicalRates');
-        const today = new Date();
-        
-        // Generate mock historical data
-        const historicalData = [];
-        for (let i = 7; i >= 0; i--) {
-            const date = new Date(today);
-            date.setDate(date.getDate() - i);
-            
-            const baseRate = 1.65;
-            const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
-            const rate = baseRate + variation;
-            const previousRate = i === 7 ? rate : historicalData[historicalData.length - 1].rate;
-            const change = rate - previousRate;
-            
-            historicalData.push({
-                date: date.toLocaleDateString(),
-                rate: rate,
-                change: change
-            });
-        }
-
-        tbody.innerHTML = historicalData.map(data => {
-            const changeClass = data.change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
-            const changeIcon = data.change >= 0 ? '↗' : '↘';
-            
-            return `
-                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td class="py-2 text-gray-900 dark:text-white">${data.date}</td>
-                    <td class="py-2 text-right text-gray-900 dark:text-white">${data.rate.toFixed(4)}</td>
-                    <td class="py-2 text-right ${changeClass}">
-                        ${changeIcon} ${Math.abs(data.change).toFixed(4)}
-                    </td>
-                </tr>
-            `;
-        }).join('');
     }
 
     showLoading(show) {
@@ -280,20 +235,7 @@ class ThemeManager {
     }
 
     addThemeToggle() {
-        const header = document.querySelector('header');
-        const toggleButton = document.createElement('button');
-        toggleButton.className = 'btn secondary absolute top-6 right-6 p-2';
-        toggleButton.innerHTML = `
-            <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-            </svg>
-            <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-            </svg>
-        `;
-        
-        header.style.position = 'relative';
-        header.appendChild(toggleButton);
+        const toggleButton = document.getElementById('themeToggle');
         
         toggleButton.addEventListener('click', () => {
             this.toggleTheme();
