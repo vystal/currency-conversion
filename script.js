@@ -53,6 +53,10 @@ class CurrencyConverter {
         this.fromCurrency = 'USD';
         this.toCurrency = 'NZD';
         
+        // Debounce timers for input handling
+        this.conversionTimer = null;
+        this.multiplicationTimer = null;
+        
         this.init();
     }
 
@@ -63,50 +67,91 @@ class CurrencyConverter {
     }
 
     bindEvents() {
+        // Get input elements
+        const fromAmountInput = document.getElementById('fromAmount');
+        const multiplyAmountInput = document.getElementById('multiplyAmount');
+        const swapButton = document.getElementById('swapButton');
+        
         // Swap button
-        document.getElementById('swapButton').addEventListener('click', () => {
+        swapButton.addEventListener('click', () => {
             this.swapCurrencies();
         });
 
-        // Input change events - auto convert as user types
-        const fromAmountInput = document.getElementById('fromAmount');
-        const multiplyAmountInput = document.getElementById('multiplyAmount');
-        
-        // Use multiple event types for better mobile compatibility
-        ['input', 'change', 'keyup', 'blur'].forEach(eventType => {
-            fromAmountInput.addEventListener(eventType, () => {
+        // Create a comprehensive event handler for amount input
+        const handleAmountChange = () => {
+            console.log('Amount input changed:', fromAmountInput.value);
+            clearTimeout(this.conversionTimer);
+            this.conversionTimer = setTimeout(() => {
                 if (this.currentRates) {
                     this.convertCurrency();
                 }
-            });
-        });
+            }, 100); // Small debounce to handle rapid typing
+        };
 
-        // Multiply amount input - use multiple events for mobile compatibility
-        ['input', 'change', 'keyup', 'blur'].forEach(eventType => {
-            multiplyAmountInput.addEventListener(eventType, () => {
+        // Create a comprehensive event handler for multiply input
+        const handleMultiplyChange = () => {
+            console.log('Multiply input changed:', multiplyAmountInput.value);
+            clearTimeout(this.multiplicationTimer);
+            this.multiplicationTimer = setTimeout(() => {
                 this.calculateMultipliedAmount();
-            });
+            }, 100); // Small debounce
+        };
+
+        // Bind all possible events for amount input
+        const amountEvents = ['input', 'change', 'keyup', 'blur', 'paste'];
+        amountEvents.forEach(eventType => {
+            fromAmountInput.addEventListener(eventType, handleAmountChange);
         });
 
-        // Enter key on amount input (for accessibility)
+        // Bind all possible events for multiply input
+        const multiplyEvents = ['input', 'change', 'keyup', 'blur', 'paste'];
+        multiplyEvents.forEach(eventType => {
+            multiplyAmountInput.addEventListener(eventType, handleMultiplyChange);
+        });
+
+        // Special mobile-focused events
+        if (isMobile) {
+            // Touch events for mobile
+            fromAmountInput.addEventListener('touchend', () => {
+                setTimeout(handleAmountChange, 150);
+            });
+            
+            multiplyAmountInput.addEventListener('touchend', () => {
+                setTimeout(handleMultiplyChange, 150);
+            });
+
+            // Focus/unfocus events
+            multiplyAmountInput.addEventListener('focus', () => {
+                setTimeout(() => {
+                    console.log('Multiply field focused, recalculating...');
+                    this.calculateMultipliedAmount();
+                }, 200);
+            });
+        }
+
+        // Enter key handlers
         fromAmountInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
+                e.preventDefault();
+                fromAmountInput.blur(); // Trigger blur event
                 this.convertCurrency();
             }
         });
 
-        // Enter key on multiply input (for accessibility)
         multiplyAmountInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
+                e.preventDefault();
+                multiplyAmountInput.blur(); // Trigger blur event
                 this.calculateMultipliedAmount();
             }
         });
 
-        // Add focus events for mobile devices
-        multiplyAmountInput.addEventListener('focus', () => {
-            // Small delay to ensure any pending conversions complete
-            setTimeout(() => this.calculateMultipliedAmount(), 100);
-        });
+        // Add global recalculation function for debugging
+        window.recalculate = () => {
+            console.log('Manual recalculation triggered');
+            this.convertCurrency();
+            setTimeout(() => this.calculateMultipliedAmount(), 50);
+        };
     }
 
     async loadInitialRates() {
@@ -153,12 +198,18 @@ class CurrencyConverter {
     async convertCurrency() {
         const fromAmountInput = document.getElementById('fromAmount');
         const toAmountInput = document.getElementById('toAmount');
-        const fromAmount = parseFloat(fromAmountInput.value);
+        
+        // Get the raw value and parse it
+        const rawValue = fromAmountInput.value.trim();
+        const fromAmount = parseFloat(rawValue);
+
+        console.log('Converting:', rawValue, 'parsed as:', fromAmount);
 
         // Clear output if no valid input
-        if (!fromAmount || isNaN(fromAmount) || fromAmount <= 0) {
+        if (!rawValue || rawValue === '' || !fromAmount || isNaN(fromAmount) || fromAmount <= 0) {
             toAmountInput.value = '';
             document.getElementById('multipliedAmount').value = '';
+            console.log('Cleared outputs - invalid input');
             return;
         }
 
@@ -175,8 +226,12 @@ class CurrencyConverter {
             toAmountInput.value = convertedAmount.toFixed(2);
             this.updateCurrentRateDisplay();
 
-            // Always recalculate multiplied amount after conversion
-            this.calculateMultipliedAmount();
+            console.log('Conversion complete:', fromAmount, '×', rate, '=', convertedAmount.toFixed(2));
+
+            // Always trigger multiplication calculation after conversion
+            setTimeout(() => {
+                this.calculateMultipliedAmount();
+            }, 50);
 
         } catch (error) {
             this.showError('Failed to convert currency. Please try again.');
@@ -189,25 +244,35 @@ class CurrencyConverter {
         const multiplyAmountInput = document.getElementById('multiplyAmount');
         const multipliedAmountInput = document.getElementById('multipliedAmount');
         
-        const convertedAmount = parseFloat(toAmountInput.value);
-        const multiplyValue = parseFloat(multiplyAmountInput.value);
-
-        // Clear multiplied amount if no valid inputs
-        if (!convertedAmount || isNaN(convertedAmount) || convertedAmount <= 0) {
-            multipliedAmountInput.value = '';
-            return;
-        }
-
-        if (!multiplyValue || isNaN(multiplyValue) || multiplyValue <= 0) {
-            multipliedAmountInput.value = '';
-            return;
-        }
-
-        const multipliedAmount = convertedAmount * multiplyValue;
-        multipliedAmountInput.value = multipliedAmount.toFixed(2);
+        // Get raw values
+        const convertedValue = toAmountInput.value.trim();
+        const multiplyValue = multiplyAmountInput.value.trim();
         
-        // Debug log for mobile testing
-        console.log(`Multiplying ${convertedAmount} × ${multiplyValue} = ${multipliedAmount}`);
+        const convertedAmount = parseFloat(convertedValue);
+        const multiplyAmount = parseFloat(multiplyValue);
+
+        console.log('Calculating multiplication:', convertedValue, '×', multiplyValue);
+        console.log('Parsed values:', convertedAmount, '×', multiplyAmount);
+
+        // Clear multiplied amount if no valid converted amount
+        if (!convertedValue || convertedValue === '' || !convertedAmount || isNaN(convertedAmount) || convertedAmount <= 0) {
+            multipliedAmountInput.value = '';
+            console.log('Cleared multiplied amount - no valid converted amount');
+            return;
+        }
+
+        // Clear multiplied amount if no valid multiply value
+        if (!multiplyValue || multiplyValue === '' || !multiplyAmount || isNaN(multiplyAmount) || multiplyAmount <= 0) {
+            multipliedAmountInput.value = '';
+            console.log('Cleared multiplied amount - no valid multiply value');
+            return;
+        }
+
+        // Calculate and display result
+        const multipliedResult = convertedAmount * multiplyAmount;
+        multipliedAmountInput.value = multipliedResult.toFixed(2);
+        
+        console.log('Multiplication result:', convertedAmount, '×', multiplyAmount, '=', multipliedResult.toFixed(2));
     }
 
     getExchangeRate(fromCurrency, toCurrency) {
