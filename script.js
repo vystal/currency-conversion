@@ -75,10 +75,22 @@ class CurrencyConverter {
             }
         });
 
+        // Multiply amount input - auto calculate multiplied amount
+        document.getElementById('multiplyAmount').addEventListener('input', () => {
+            this.calculateMultipliedAmount();
+        });
+
         // Enter key on amount input (for accessibility)
         document.getElementById('fromAmount').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.convertCurrency();
+            }
+        });
+
+        // Enter key on multiply input (for accessibility)
+        document.getElementById('multiplyAmount').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.calculateMultipliedAmount();
             }
         });
     }
@@ -130,6 +142,7 @@ class CurrencyConverter {
         // Clear output if no valid input
         if (!fromAmount || isNaN(fromAmount) || fromAmount <= 0) {
             document.getElementById('toAmount').value = '';
+            document.getElementById('multipliedAmount').value = '';
             return;
         }
 
@@ -146,10 +159,28 @@ class CurrencyConverter {
             document.getElementById('toAmount').value = convertedAmount.toFixed(2);
             this.updateCurrentRateDisplay();
 
+            // Also calculate multiplied amount if multiply value exists
+            this.calculateMultipliedAmount();
+
         } catch (error) {
             this.showError('Failed to convert currency. Please try again.');
             console.error('Conversion error:', error);
         }
+    }
+
+    calculateMultipliedAmount() {
+        const convertedAmount = parseFloat(document.getElementById('toAmount').value);
+        const multiplyValue = parseFloat(document.getElementById('multiplyAmount').value);
+
+        // Clear multiplied amount if no valid inputs
+        if (!convertedAmount || isNaN(convertedAmount) || convertedAmount <= 0 ||
+            !multiplyValue || isNaN(multiplyValue) || multiplyValue <= 0) {
+            document.getElementById('multipliedAmount').value = '';
+            return;
+        }
+
+        const multipliedAmount = convertedAmount * multiplyValue;
+        document.getElementById('multipliedAmount').value = multipliedAmount.toFixed(2);
     }
 
     getExchangeRate(fromCurrency, toCurrency) {
@@ -201,6 +232,7 @@ class CurrencyConverter {
         
         document.getElementById('fromCurrencySymbol').textContent = fromSymbol;
         document.getElementById('toCurrencySymbol').textContent = toSymbol;
+        document.getElementById('multipliedCurrencySymbol').textContent = toSymbol;
     }
 
     getCurrencySymbol(currency) {

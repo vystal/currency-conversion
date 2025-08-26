@@ -67,15 +67,42 @@
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <label class="block text-md font-medium text-gray-700 dark:text-gray-300">
+                        <label class="block text-md font-medium text-gray-600 dark:text-gray-500">
                             Converted Amount
                         </label>
                         <div class="relative">
                             <div class="flex items-center min-w-[42px]">
                                 <span id="toCurrencySymbol"
-                                    class="absolute left-3 z-10 text-gray-500 dark:text-gray-400 font-medium ml-2">$</span>
+                                    class="absolute left-3 z-10 text-gray-600 dark:text-gray-500 font-medium ml-2">$</span>
                                 <input type="text" id="toAmount" placeholder="0"
+                                    class="lg:flex relative flex-1 pointer-events-auto rounded-xl w-full items-center text-sm leading-6 py-1.5 pl-8 pr-3 pl-5 shadow-sm text-gray-600 dark:text-gray-500 bg-background-light dark:bg-background-dark dark:brightness-[1.1] dark:ring-1 dark:hover:brightness-[1.25] ring-1 ring-gray-400/20 hover:ring-gray-600/25 dark:ring-gray-600/30 dark:hover:ring-gray-500/30 focus:outline-primary justify-between truncate gap-2 min-w-[43px]"
+                                    readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-md font-medium text-gray-700 dark:text-gray-300">
+                            Multiply
+                        </label>
+                        <div class="relative">
+                            <div class="flex items-center min-w-[42px]">
+                                <span class="absolute left-3 z-10 text-gray-500 dark:text-gray-400 font-medium ml-2">×</span>
+                                <input type="number" id="multiplyAmount" placeholder="0"
                                     class="lg:flex relative flex-1 pointer-events-auto rounded-xl w-full items-center text-sm leading-6 py-1.5 pl-8 pr-3 pl-5 shadow-sm text-gray-900 dark:text-white bg-background-light dark:bg-background-dark dark:brightness-[1.1] dark:ring-1 dark:hover:brightness-[1.25] ring-1 ring-gray-400/20 hover:ring-gray-600/25 dark:ring-gray-600/30 dark:hover:ring-gray-500/30 focus:outline-primary justify-between truncate gap-2 min-w-[43px]"
+                                    step="0.01" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-md font-medium text-gray-600 dark:text-gray-500">
+                            Multiplied Amount
+                        </label>
+                        <div class="relative">
+                            <div class="flex items-center min-w-[42px]">
+                                <span id="multipliedCurrencySymbol"
+                                    class="absolute left-3 z-10 text-gray-600 dark:text-gray-500 font-medium ml-2">$</span>
+                                <input type="text" id="multipliedAmount" placeholder="0"
+                                    class="lg:flex relative flex-1 pointer-events-auto rounded-xl w-full items-center text-sm leading-6 py-1.5 pl-8 pr-3 pl-5 shadow-sm text-gray-600 dark:text-gray-500 bg-background-light dark:bg-background-dark dark:brightness-[1.1] dark:ring-1 dark:hover:brightness-[1.25] ring-1 ring-gray-400/20 hover:ring-gray-600/25 dark:ring-gray-600/30 dark:hover:ring-gray-500/30 focus:outline-primary justify-between truncate gap-2 min-w-[43px]"
                                     readonly>
                             </div>
                         </div>
