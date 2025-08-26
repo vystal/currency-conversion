@@ -69,29 +69,43 @@ class CurrencyConverter {
         });
 
         // Input change events - auto convert as user types
-        document.getElementById('fromAmount').addEventListener('input', () => {
-            if (this.currentRates) {
-                this.convertCurrency();
-            }
+        const fromAmountInput = document.getElementById('fromAmount');
+        const multiplyAmountInput = document.getElementById('multiplyAmount');
+        
+        // Use multiple event types for better mobile compatibility
+        ['input', 'change', 'keyup', 'blur'].forEach(eventType => {
+            fromAmountInput.addEventListener(eventType, () => {
+                if (this.currentRates) {
+                    this.convertCurrency();
+                }
+            });
         });
 
-        // Multiply amount input - auto calculate multiplied amount
-        document.getElementById('multiplyAmount').addEventListener('input', () => {
-            this.calculateMultipliedAmount();
+        // Multiply amount input - use multiple events for mobile compatibility
+        ['input', 'change', 'keyup', 'blur'].forEach(eventType => {
+            multiplyAmountInput.addEventListener(eventType, () => {
+                this.calculateMultipliedAmount();
+            });
         });
 
         // Enter key on amount input (for accessibility)
-        document.getElementById('fromAmount').addEventListener('keypress', (e) => {
+        fromAmountInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.convertCurrency();
             }
         });
 
         // Enter key on multiply input (for accessibility)
-        document.getElementById('multiplyAmount').addEventListener('keypress', (e) => {
+        multiplyAmountInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.calculateMultipliedAmount();
             }
+        });
+
+        // Add focus events for mobile devices
+        multiplyAmountInput.addEventListener('focus', () => {
+            // Small delay to ensure any pending conversions complete
+            setTimeout(() => this.calculateMultipliedAmount(), 100);
         });
     }
 
@@ -137,11 +151,13 @@ class CurrencyConverter {
     }
 
     async convertCurrency() {
-        const fromAmount = parseFloat(document.getElementById('fromAmount').value);
+        const fromAmountInput = document.getElementById('fromAmount');
+        const toAmountInput = document.getElementById('toAmount');
+        const fromAmount = parseFloat(fromAmountInput.value);
 
         // Clear output if no valid input
         if (!fromAmount || isNaN(fromAmount) || fromAmount <= 0) {
-            document.getElementById('toAmount').value = '';
+            toAmountInput.value = '';
             document.getElementById('multipliedAmount').value = '';
             return;
         }
@@ -156,10 +172,10 @@ class CurrencyConverter {
             const convertedAmount = fromAmount * rate;
 
             // Update UI
-            document.getElementById('toAmount').value = convertedAmount.toFixed(2);
+            toAmountInput.value = convertedAmount.toFixed(2);
             this.updateCurrentRateDisplay();
 
-            // Also calculate multiplied amount if multiply value exists
+            // Always recalculate multiplied amount after conversion
             this.calculateMultipliedAmount();
 
         } catch (error) {
@@ -169,18 +185,29 @@ class CurrencyConverter {
     }
 
     calculateMultipliedAmount() {
-        const convertedAmount = parseFloat(document.getElementById('toAmount').value);
-        const multiplyValue = parseFloat(document.getElementById('multiplyAmount').value);
+        const toAmountInput = document.getElementById('toAmount');
+        const multiplyAmountInput = document.getElementById('multiplyAmount');
+        const multipliedAmountInput = document.getElementById('multipliedAmount');
+        
+        const convertedAmount = parseFloat(toAmountInput.value);
+        const multiplyValue = parseFloat(multiplyAmountInput.value);
 
         // Clear multiplied amount if no valid inputs
-        if (!convertedAmount || isNaN(convertedAmount) || convertedAmount <= 0 ||
-            !multiplyValue || isNaN(multiplyValue) || multiplyValue <= 0) {
-            document.getElementById('multipliedAmount').value = '';
+        if (!convertedAmount || isNaN(convertedAmount) || convertedAmount <= 0) {
+            multipliedAmountInput.value = '';
+            return;
+        }
+
+        if (!multiplyValue || isNaN(multiplyValue) || multiplyValue <= 0) {
+            multipliedAmountInput.value = '';
             return;
         }
 
         const multipliedAmount = convertedAmount * multiplyValue;
-        document.getElementById('multipliedAmount').value = multipliedAmount.toFixed(2);
+        multipliedAmountInput.value = multipliedAmount.toFixed(2);
+        
+        // Debug log for mobile testing
+        console.log(`Multiplying ${convertedAmount} × ${multiplyValue} = ${multipliedAmount}`);
     }
 
     getExchangeRate(fromCurrency, toCurrency) {
